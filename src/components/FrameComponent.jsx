@@ -51,7 +51,7 @@ const FrameComponent = ({ asset, setAsset }) => {
     <Box
       sx={{
         marginBottom: 2,
-        marginTop: 3,
+        marginTop: 0.5,
         marginLeft: 3,
         height: "85vh",
         overflowY: "scroll",

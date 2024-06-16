@@ -105,6 +105,7 @@ const ScenesGrid = ({ projectData }) => {
                   <ActionsIcon
                     ID={{ sceneId: project._id }}
                     title={"Scene " + index + 1}
+                    type="scene"
                   />
                 </div>
               </Typography>

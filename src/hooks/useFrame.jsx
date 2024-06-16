@@ -153,5 +153,6 @@ export const useFrame = (fetchFrames = false) => {
     generationCompleted,
     isError,
     getFrames,
+    generateFrames,
   };
 };

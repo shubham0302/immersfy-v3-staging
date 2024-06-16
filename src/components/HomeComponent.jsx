@@ -15,11 +15,13 @@ import NewProjectButton from "./NewProjectButton";
 import { MovieFilter } from "@mui/icons-material";
 import Loader from "./Loader";
 import { useEligibility } from "../hooks/useEligibility";
+import { useAuth } from "../hooks/useAuth";
 
 const HomeComponent = ({ loading, setLoading, navData, setNavData }) => {
   const { data, isLoading } = useProject(true);
 
   const [currView, setCurrView] = useState("Group");
+  const { user } = useAuth();
   const [sortBy, setSortBy] = useState("Last modified");
   // eslint-disable-next-line no-unused-vars
   const [isOpen, setIsOpen] = useState(false);
@@ -45,23 +47,27 @@ const HomeComponent = ({ loading, setLoading, navData, setNavData }) => {
   };
 
   return (
-    <Box sx={{ marginBottom: 2, marginTop: 3, marginLeft: 3 }}>
+    <Box sx={{ marginBottom: 2, marginLeft: 3 }}>
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           marginBottom: 2,
-          marginTop: 3,
           marginLeft: 3,
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ display: "flex", alignItems: "flex-end" }}>
           {/* Heading */}
 
-          <Typography variant="h5" component="div" style={{ fontSize: "32px" }}>
-            Projects
-          </Typography>
+          <Box>
+            <Typography variant="body1" color={"primary.main"}>
+              Hi {user.name},
+            </Typography>
+            <Typography variant="h5" style={{ fontSize: "32px" }}>
+              Projects
+            </Typography>
+          </Box>
 
           <Button
             sx={{

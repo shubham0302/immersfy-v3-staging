@@ -42,14 +42,14 @@ const ProjectComponent = ({ asset, setAsset }) => {
   };
 
   return (
-    <Box sx={{ marginBottom: 2, marginTop: 3, marginLeft: 3 }}>
+    <Box sx={{ marginBottom: 2, marginLeft: 3 }}>
       <Box
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           marginBottom: 2,
-          marginTop: 3,
+          marginTop: 1,
           marginLeft: 3,
         }}
       >

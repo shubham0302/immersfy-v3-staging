@@ -5,6 +5,7 @@ import { authReduer } from "./slice/auth.reducer";
 import { projectReducer } from "./slice/project.reducer";
 import { sceneReducer } from "./slice/scene.reducer";
 import { frameReducer } from "./slice/frame.reducer";
+import popupReducer from "./slice/popup.reducer";
 
 const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ const store = configureStore({
     project: projectReducer,
     scene: sceneReducer,
     frame: frameReducer,
+    popup: popupReducer,
   },
 });
 

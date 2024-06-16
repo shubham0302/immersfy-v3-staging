@@ -83,5 +83,6 @@ export const useProject = (fetchProjects = false) => {
     errorMessage,
     createProject,
     getAllScenes,
+    getProjects,
   };
 };

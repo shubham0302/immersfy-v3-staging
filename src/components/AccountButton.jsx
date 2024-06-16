@@ -105,7 +105,7 @@ const AccountButton = () => {
               }}
             />
           </Box>
-          <Box
+          {/* <Box
             sx={{
               display: "flex",
               justifyContent: "space-between",
@@ -138,7 +138,7 @@ const AccountButton = () => {
               {" "}
               PRO{" "}
             </Box>
-          </Box>
+          </Box> */}
 
           {/* <Box sx={{ padding: "24px", bgcolor: "greys.lightest" }}>
             <Typography

@@ -3,13 +3,7 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import {
-  Box,
-  MenuItem,
-  Modal,
-  Popover,
-  Skeleton,
-} from "@mui/material";
+import { Box, MenuItem, Modal, Popover, Skeleton } from "@mui/material";
 import { styled } from "@mui/system";
 import DownloadIcon from "../Assets/Images/download-circle.png";
 import DeleteIcon from "../Assets/Images/delete.png";
@@ -23,6 +17,8 @@ import FrameEditMainComponent from "./FrameEditMainComponent";
 import { MoreVertOutlined } from "@mui/icons-material";
 import GenerateFrameMain from "./GenerateFrameMain";
 import GeneralMainPanel from "./GeneralMainPanel";
+import { useAppDispatch } from "../store";
+import { setDeletePopup } from "../store/slice/popup.reducer";
 
 const Overlay = styled("div")({
   position: "absolute",
@@ -100,6 +96,7 @@ const modalStyle = {
 };
 
 const FramesGrid = ({ sceneData }) => {
+  const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const [selectedFrame, setSelectedFrame] = useState(0);
   const [isEditBarOpen, setEditBar] = useState(false);
@@ -112,10 +109,11 @@ const FramesGrid = ({ sceneData }) => {
   const { frameData, generationCompleted, generatedFramesNumber } = useFrame();
   const [selectedFrameUrl, setSelectedFrameUrl] = useState(0);
   const [isRegenerateScene, setRegenerateScene] = useState(false);
-  const [eraseButton,setEraseBtnClicked]=useState(false);
+  const [eraseButton, setEraseBtnClicked] = useState(false);
+  const [selectedFrameId, setSelectedFrameId] = useState("");
 
   const setDraw = () => {
-    setEraseBtnClicked(false)
+    setEraseBtnClicked(false);
     setDrawBtnClicked(true);
     const drawingCanvas = drawingCanvasRef.current;
     const drawingContext = drawingCanvas.getContext("2d");
@@ -139,7 +137,7 @@ const FramesGrid = ({ sceneData }) => {
     const drawingCanvas = drawingCanvasRef.current;
     const drawingContext = drawingCanvas.getContext("2d");
     drawingContext.globalCompositeOperation = "destination-out";
-    setEraseBtnClicked(true)
+    setEraseBtnClicked(true);
   };
 
   const handleClearCanvas = () => {
@@ -156,9 +154,10 @@ const FramesGrid = ({ sceneData }) => {
   };
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const handleMenuClick = (event) => {
+  const handleMenuClick = (event, id) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
+    setSelectedFrameId(id);
   };
 
   const handleCloseMenu = (e) => {
@@ -216,11 +215,11 @@ const FramesGrid = ({ sceneData }) => {
                             style={{ width: "20px", height: "20px" }}
                           />
                         </CircleButton>
-                        </LeftButtonContainer>
+                      </LeftButtonContainer>
                       <RightButtonContainer>
                         <CircleButton
                           onClick={(e) => {
-                            handleMenuClick(e);
+                            handleMenuClick(e, frame._id);
                             // handleOpen(index);
                           }}
                         >
@@ -302,23 +301,80 @@ const FramesGrid = ({ sceneData }) => {
                   isRegenerateScene={isRegenerateScene}
                 />
                 {/* edit bar */}
-                <Box sx={{ minWidth: "5%",position:"relative",width:(isRegenerateScene||isEditBarOpen||isGeneralSetting)?"30%":"auto"}}>
-                  <Box display={"flex"} position={"absolute"} zIndex={100} right={0} top={0} height={"100%"} bgcolor={"white"} sx={{textOrientation:"sideways-right",writingMode:"vertical-rl",rotate:"180deg"}} px={1} justifyContent={"space-evenly"} boxShadow={5} alignItems={"center"} borderRadius={4}>
-                    <Typography onClick={()=>{
-                      setEditBar(!isEditBarOpen);
-                      setRegenerateScene(false);
-                      setGeneralSetting(false);
-                    }} sx={{cursor:"pointer",p:1,borderLeft:isEditBarOpen?"2px solid":0,borderColor:"primary.light"}}>Inpainting</Typography>
-                    <Typography onClick={()=>{
-                      setEditBar(false);
-                      setRegenerateScene(false);
-                      setGeneralSetting(!isGeneralSetting);
-                    }} sx={{cursor:"pointer",p:1,borderLeft:isGeneralSetting?"2px solid":0,borderColor:"primary.light"}}>General Settings</Typography>
-                    <Typography onClick={()=>{
-                      setEditBar(false);
-                      setRegenerateScene(!isRegenerateScene);
-                      setGeneralSetting(false);
-                    }} sx={{cursor:"pointer",p:1,borderLeft:isRegenerateScene?"2px solid":0,borderColor:"primary.light"}}>Regenerate</Typography>
+                <Box
+                  sx={{
+                    minWidth: "5%",
+                    position: "relative",
+                    width:
+                      isRegenerateScene || isEditBarOpen || isGeneralSetting
+                        ? "30%"
+                        : "auto",
+                  }}
+                >
+                  <Box
+                    display={"flex"}
+                    position={"absolute"}
+                    zIndex={100}
+                    right={0}
+                    top={0}
+                    height={"100%"}
+                    bgcolor={"white"}
+                    sx={{
+                      textOrientation: "sideways-right",
+                      writingMode: "vertical-rl",
+                      rotate: "180deg",
+                    }}
+                    px={1}
+                    justifyContent={"space-evenly"}
+                    boxShadow={5}
+                    alignItems={"center"}
+                    borderRadius={4}
+                  >
+                    <Typography
+                      onClick={() => {
+                        setEditBar(!isEditBarOpen);
+                        setRegenerateScene(false);
+                        setGeneralSetting(false);
+                      }}
+                      sx={{
+                        cursor: "pointer",
+                        p: 1,
+                        borderLeft: isEditBarOpen ? "2px solid" : 0,
+                        borderColor: "primary.light",
+                      }}
+                    >
+                      Inpainting
+                    </Typography>
+                    <Typography
+                      onClick={() => {
+                        setEditBar(false);
+                        setRegenerateScene(false);
+                        setGeneralSetting(!isGeneralSetting);
+                      }}
+                      sx={{
+                        cursor: "pointer",
+                        p: 1,
+                        borderLeft: isGeneralSetting ? "2px solid" : 0,
+                        borderColor: "primary.light",
+                      }}
+                    >
+                      General Settings
+                    </Typography>
+                    <Typography
+                      onClick={() => {
+                        setEditBar(false);
+                        setRegenerateScene(!isRegenerateScene);
+                        setGeneralSetting(false);
+                      }}
+                      sx={{
+                        cursor: "pointer",
+                        p: 1,
+                        borderLeft: isRegenerateScene ? "2px solid" : 0,
+                        borderColor: "primary.light",
+                      }}
+                    >
+                      Regenerate
+                    </Typography>
                   </Box>
                   {isRegenerateScene && (
                     <Box
@@ -326,9 +382,9 @@ const FramesGrid = ({ sceneData }) => {
                         bgcolor: "white",
                         borderRadius: "12px",
                         p: 2,
-                        width:"100%",
-                        height:"100%",
-                        pr:10
+                        width: "100%",
+                        height: "100%",
+                        pr: 10,
                       }}
                     >
                       <Box
@@ -353,45 +409,45 @@ const FramesGrid = ({ sceneData }) => {
                     </Box>
                   )}
                   {isEditBarOpen && (
-                      <Box
-                        sx={{
-                          bgcolor: "white",
-                          borderRadius: "12px",
-                          p: 2,
-                          width:"100%",
-                          height:"100%",
-                          pr:10
-                        }}
-                      >
-                        <FrameEditMainComponent
-                          drawButton={drawButton}
-                          eraseButton={eraseButton}
-                          setDraw={setDraw}
-                          brushSize={brushSize}
-                          handleSliderChange={handleSliderChange}
-                          handleClearCanvas={handleClearCanvas}
-                          setErase={setErase}
-                          frameData={frameData}
-                          selectedFrame={selectedFrame}
-                          closeEditBar={closeEditBar}
-                          setSelectedFrameUrl={setSelectedFrameUrl}
-                        />
-                      </Box>
+                    <Box
+                      sx={{
+                        bgcolor: "white",
+                        borderRadius: "12px",
+                        p: 2,
+                        width: "100%",
+                        height: "100%",
+                        pr: 10,
+                      }}
+                    >
+                      <FrameEditMainComponent
+                        drawButton={drawButton}
+                        eraseButton={eraseButton}
+                        setDraw={setDraw}
+                        brushSize={brushSize}
+                        handleSliderChange={handleSliderChange}
+                        handleClearCanvas={handleClearCanvas}
+                        setErase={setErase}
+                        frameData={frameData}
+                        selectedFrame={selectedFrame}
+                        closeEditBar={closeEditBar}
+                        setSelectedFrameUrl={setSelectedFrameUrl}
+                      />
+                    </Box>
                   )}
                   {isGeneralSetting && (
-                      <Box
+                    <Box
                       sx={{
-                          bgcolor: "white",
-                          borderRadius: "12px",
-                          p: 2,
-                          width:"100%",
-                          height:"100%",
-                          pr:10
-                        }}
-                      >
-                        <GeneralMainPanel/>
-                      </Box>
-                    )}
+                        bgcolor: "white",
+                        borderRadius: "12px",
+                        p: 2,
+                        width: "100%",
+                        height: "100%",
+                        pr: 10,
+                      }}
+                    >
+                      <GeneralMainPanel />
+                    </Box>
+                  )}
                 </Box>
                 {/* edit bar over */}
               </Box>
@@ -458,7 +514,16 @@ const FramesGrid = ({ sceneData }) => {
           />
         </MenuItem>
         <MenuItem
-          onClick={handleCloseMenu}
+          onClick={() => {
+            dispatch(
+              setDeletePopup({
+                id: selectedFrameId,
+                type: "frame",
+                popup: true,
+              })
+            );
+            handleCloseMenu();
+          }}
           sx={{
             display: "flex",
             justifyContent: "space-between",

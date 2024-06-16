@@ -73,6 +73,7 @@ export const useScene = (fetchScenes = false) => {
     data,
     errorMessage,
     createScene,
+    getScene,
   };
 };
 

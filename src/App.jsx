@@ -13,7 +13,6 @@ import { useFrame } from "./hooks/useFrame";
 import { useSocket } from "./hooks/useSocket";
 import SubscriptionPopup from "./components/SubscriptionPopup";
 import { useEligibility } from "./hooks/useEligibility";
-
 const App = () => {
   const themeState = useSelector((state) => state.theme);
 
@@ -49,6 +48,7 @@ const App = () => {
           type={themeState.popupType}
           closeFunction={closeSubscriptionPopup}
         />
+
         <RouterProvider router={router} />
         <CssBaseline />
       </ThemeProvider>

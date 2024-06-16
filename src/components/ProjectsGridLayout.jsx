@@ -96,6 +96,7 @@ const ProjectGrid = ({ projectData }) => {
                   <ActionsIcon
                     ID={{ projectId: project._id }}
                     title={project.name}
+                    type="project"
                   />
                 </Box>
               </Typography>

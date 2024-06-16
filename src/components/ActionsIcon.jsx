@@ -9,15 +9,27 @@ import jsPDF from "jspdf";
 import { useProject } from "../hooks/useProject";
 import { useFrame } from "../hooks/useFrame";
 import ExportPdfIcon from "../Assets/Images/pdf.png";
+import { useAppDispatch } from "../store";
+import { setDeletePopup } from "../store/slice/popup.reducer";
 
-const ActionsIcon = ({ ID, title }) => {
+const ActionsIcon = ({ ID, title, type }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { getFrames } = useFrame();
   const { getAllScenes } = useProject();
 
+  const dispatch = useAppDispatch();
+
   const handleMenuClick = (event) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
+  };
+
+  const deletePdfPopup = (event) => {
+    event.stopPropagation();
+    dispatch(
+      setDeletePopup({ id: ID.projectId || ID.sceneId, type, popup: true })
+    );
+    handleClose();
   };
 
   const handleClose = () => {
@@ -217,7 +229,7 @@ const ActionsIcon = ({ ID, title }) => {
           />
         </MenuItem>
         <MenuItem
-          onClick={handleClose}
+          onClick={deletePdfPopup}
           sx={{
             display: "flex",
             justifyContent: "space-between",
