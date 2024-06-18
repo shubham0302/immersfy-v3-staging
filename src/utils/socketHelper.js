@@ -2,8 +2,8 @@ import { io } from "socket.io-client";
 
 export class MySocket {
   // URL = "http://localhost:8000";
-  URL = "https://api.immersfy.com";
-  // URL = "https://v3.immersfy.com";
+  // URL = "https://api.immersfy.com";
+  URL = "https://v3.immersfy.com";
   socket;
   constructor() {
     this.socket = io(this.URL);

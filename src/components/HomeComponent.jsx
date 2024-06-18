@@ -86,7 +86,7 @@ const HomeComponent = ({ loading, setLoading, navData, setNavData }) => {
               alt="Group View Icon"
               style={{ marginRight: 5, width: 20, height: 20 }}
             />
-            Group View
+            Tile View
           </Button>
           <Button
             sx={{

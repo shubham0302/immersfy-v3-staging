@@ -40,7 +40,7 @@ const Login = () => {
         flowId="sign-up-or-in"
         // redirectUrl={"http://localhost:5173/login"}
         // redirectUrl={"https://beta.immersfy.com/login"}
-        redirectUrl={"https://staging.immersfy.com/login"}
+        redirectUrl={"https://app.immersfy.com/login"}
         // redirectUrl={"https://immersfy-v3.vercel.app/login"}
         theme="light"
         onSuccess={(e) => {
