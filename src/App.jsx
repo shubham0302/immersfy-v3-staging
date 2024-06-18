@@ -46,7 +46,7 @@ const App = () => {
 
   return (
     <AuthProvider
-      projectId="P2hPY0Sva8oDEUBjJhxUIqEzEIaB"
+      projectId="P2ZkCSW4KutZ3osOqzOVSt6pJAsX"
       baseUrl="https://auth.staging.immersfy.com"
     >
       <ThemeProvider theme={theme(themeState.theme)}>
