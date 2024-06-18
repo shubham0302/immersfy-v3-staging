@@ -105,30 +105,32 @@ const ProjectTable = ({ projectData }) => {
                   }
                   sx={{ cursor: "pointer", width: "fit-content" }}
                 >
-                  {/* <Box
-                    component={"span"}
-                    bgcolor={"primary.lightest"}
-                    py={1}
-                    borderRadius={1}
-                    color={"text.main"}
-                    fontWeight={600}
-                    px={2}
-                  >
-                    {createProjectTitle(project?.name)}
-                  </Box> */}
-
-                  <img
-                    src={project.thumbnail}
-                    alt={project.name}
-                    style={{
-                      height: "48px",
-                      objectFit: "cover",
-                      borderRadius: "4px",
-                      filter: `grayscale(${
-                        project.colorType === "black&White" ? "1" : "0"
-                      })`,
-                    }}
-                  />
+                  {project.thumbnail && project.thumbnail !== "" ? (
+                    <img
+                      src={project.thumbnail}
+                      alt={project.name}
+                      style={{
+                        height: "48px",
+                        objectFit: "cover",
+                        borderRadius: "4px",
+                        filter: `grayscale(${
+                          project.colorType === "black&White" ? "1" : "0"
+                        })`,
+                      }}
+                    />
+                  ) : (
+                    <Box
+                      component={"span"}
+                      bgcolor={"primary.lightest"}
+                      py={1}
+                      borderRadius={1}
+                      color={"text.main"}
+                      fontWeight={600}
+                      px={2}
+                    >
+                      {createProjectTitle(project?.name)}
+                    </Box>
+                  )}
                   <Typography>{project?.name}</Typography>
                 </Box>
               </TableCell>

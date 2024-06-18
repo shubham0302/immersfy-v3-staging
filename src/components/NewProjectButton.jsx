@@ -62,7 +62,6 @@ const NewProjectButton = ({ loading, setLoading, navData, setNavData }) => {
       }, 1500);
       return () => {
         clearTimeout(timer);
-        console.log(navData, "hello nav data");
         navigate(`/project/${navData.id}?title=${navData.name}`);
       };
     }
