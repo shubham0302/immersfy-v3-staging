@@ -4,6 +4,10 @@ const initialState = {
   deletePopup: false,
   deleteId: "",
   deleteType: "",
+  editTitlePopup: false,
+  editTitleId: "",
+  editTitleType: "",
+  editTitleValue: "",
 };
 
 const popupReducer = createSlice({
@@ -15,8 +19,14 @@ const popupReducer = createSlice({
       state.deleteType = action.payload.type;
       state.deleteId = action.payload.id;
     },
+    setEditTitlePopup: (state, action) => {
+      state.editTitlePopup = action.payload.popup;
+      state.editTitleType = action.payload.type;
+      state.editTitleId = action.payload.id;
+      state.editTitleValue = action.payload.title;
+    },
   },
 });
 
 export default popupReducer.reducer;
-export const { setDeletePopup } = popupReducer.actions;
+export const { setDeletePopup, setEditTitlePopup } = popupReducer.actions;

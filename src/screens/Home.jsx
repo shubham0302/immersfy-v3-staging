@@ -4,6 +4,7 @@ import HomeComponent from "../components/HomeComponent.jsx";
 import { useState } from "react";
 import DeletePopup from "../components/DeletePopup.jsx";
 import { useAppSelector } from "../store/index.js";
+import EditTitlePopup from "../components/EditTitlePopup.jsx";
 
 const Home = () => {
   const [loading, setLoading] = useState(false);
@@ -16,6 +17,12 @@ const Home = () => {
         open={popupState.deletePopup}
         type={popupState.deleteType}
         id={popupState.deleteId}
+      />
+      <EditTitlePopup
+        open={popupState.editTitlePopup}
+        type={popupState.editTitleType}
+        id={popupState.editTitleId}
+        title={popupState.editTitleValue}
       />
       <Box height={"100vh"} bgcolor={"text.light"}>
         <Header

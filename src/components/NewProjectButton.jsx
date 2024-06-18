@@ -189,6 +189,15 @@ const NewProjectButton = ({ loading, setLoading, navData, setNavData }) => {
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
+                    "&:hover img": {
+                      transition: "all 0.3s ease",
+                      border: "2px solid #FF3C00",
+                      opacity: 1,
+                    },
+                    "&:hover .hoverText": {
+                      transition: "all 0.3s ease",
+                      color: "#201612",
+                    },
                   }}
                 >
                   <Box
@@ -209,6 +218,7 @@ const NewProjectButton = ({ loading, setLoading, navData, setNavData }) => {
                   <Typography
                     variant="body2"
                     align="center"
+                    className="hoverText"
                     sx={{
                       color:
                         formData.style == item.value ? "#201612" : "#98A5A8",

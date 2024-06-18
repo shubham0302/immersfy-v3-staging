@@ -125,6 +125,74 @@ export const useFrame = (fetchFrames = false) => {
     [frameState.data, setActiveFrame]
   );
 
+  const promptRegenerateScene = useCallback(
+    async (formData, id, close, setLoading, setSelectedFrameUrl) => {
+      try {
+        const data = await postData("/frame/regenerate_scene", formData);
+
+        const frames = frameState.data;
+        const updatedData = frames.map((item, inx) => {
+          if (inx === id) {
+            return {
+              ...item,
+              framesUrl: [...item.framesUrl, data.data],
+            };
+          }
+          return item;
+        });
+        await setActiveFrame(
+          {
+            frame_id: updatedData[id]._id,
+            active_id: updatedData[id].framesUrl.length - 1,
+          },
+          setSelectedFrameUrl,
+          updatedData,
+          close
+        );
+        setLoading(false);
+        // close();
+      } catch (error) {
+        setLoading(false);
+        console.log(error, "error while regenerating");
+      }
+    },
+    [frameState.data, setActiveFrame]
+  );
+
+  const referenceImageFunction = useCallback(
+    async (formData, id, close, setLoading, setSelectedFrameUrl) => {
+      try {
+        const data = await postData("/frame/reference_image", formData);
+
+        const frames = frameState.data;
+        const updatedData = frames.map((item, inx) => {
+          if (inx === id) {
+            return {
+              ...item,
+              framesUrl: [...item.framesUrl, data.data],
+            };
+          }
+          return item;
+        });
+        await setActiveFrame(
+          {
+            frame_id: updatedData[id]._id,
+            active_id: updatedData[id].framesUrl.length - 1,
+          },
+          setSelectedFrameUrl,
+          updatedData,
+          close
+        );
+        setLoading(false);
+        // close();
+      } catch (error) {
+        setLoading(false);
+        console.log(error, "error while regenerating");
+      }
+    },
+    [frameState.data, setActiveFrame]
+  );
+
   const getFrames = useCallback(async (id) => {
     try {
       const data = await getData(`/frame/get?sceneId=${id}`);
@@ -151,8 +219,10 @@ export const useFrame = (fetchFrames = false) => {
     updateRegeneratedFrame,
     setActiveFrame,
     generationCompleted,
+    referenceImageFunction,
     isError,
     getFrames,
+    promptRegenerateScene,
     generateFrames,
   };
 };

@@ -10,18 +10,39 @@ import { useProject } from "../hooks/useProject";
 import { useFrame } from "../hooks/useFrame";
 import ExportPdfIcon from "../Assets/Images/pdf.png";
 import { useAppDispatch } from "../store";
-import { setDeletePopup } from "../store/slice/popup.reducer";
+import {
+  setDeletePopup,
+  setEditTitlePopup,
+} from "../store/slice/popup.reducer";
+import { useScene } from "../hooks/useScene";
+import { CircularProgress } from "@mui/material";
 
 const ActionsIcon = ({ ID, title, type }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const { getFrames } = useFrame();
   const { getAllScenes } = useProject();
+  const { getSceneDetails } = useScene();
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   const dispatch = useAppDispatch();
 
   const handleMenuClick = (event) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
+  };
+
+  const editTitlePopup = (event) => {
+    event.stopPropagation();
+
+    dispatch(
+      setEditTitlePopup({
+        id: ID.projectId || ID.sceneId,
+        type,
+        popup: true,
+        title,
+      })
+    );
+    setAnchorEl(null);
   };
 
   const deletePdfPopup = (event) => {
@@ -32,12 +53,14 @@ const ActionsIcon = ({ ID, title, type }) => {
     handleClose();
   };
 
-  const handleClose = () => {
+  const handleClose = (event) => {
+    event.stopPropagation();
     setAnchorEl(null);
   };
 
   const downloadPDF = async (event) => {
     event.stopPropagation();
+    setPdfLoading(true);
     try {
       const pdf = new jsPDF({ orientation: "landscape", unit: "mm" });
       const pageWidth = pdf.internal.pageSize.getWidth();
@@ -48,10 +71,51 @@ const ActionsIcon = ({ ID, title, type }) => {
       const frameData = ID.sceneId
         ? await getFrames(ID.sceneId)
         : await getAllScenes(ID.projectId);
-      console.log(frameData);
+
+      let currentScene = null;
+      let frameNumber = 1;
+      let xPos = margin;
+      let yPos = spaceBeforeImage + margin;
+      let sceneTitle = title || "";
+
+      const resetPositions = () => {
+        xPos = margin;
+        yPos = spaceBeforeImage + margin;
+      };
+
+      resetPositions();
 
       for (let index = 0; index < frameData?.length; index++) {
         const scene = frameData[index];
+        if (index % 2 === 0 && index !== 0) {
+          // Add a new page for every two images
+          pdf.addPage();
+          // Reset positions for new page
+          resetPositions();
+        }
+        // Check if the scene has changed
+        if (scene.scene !== currentScene) {
+          currentScene = scene.scene;
+          frameNumber = 1;
+
+          // if (index !== 0) {
+          //   pdf.addPage();
+          // }
+
+          if (ID?.projectId) {
+            const data = await getSceneDetails(scene?.scene);
+
+            sceneTitle = data.title;
+          }
+
+          // Add the title for the new scene
+          pdf.setFontSize(16);
+          pdf.text(sceneTitle, pageWidth / 2, margin + 5, { align: "center" });
+
+          // Reset positions for new scene
+          resetPositions();
+        }
+
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.src = scene.framesUrl[scene.activeUrl] + "?not-from-cache-please";
@@ -84,41 +148,16 @@ const ActionsIcon = ({ ID, title, type }) => {
 
             const spaceAvailable = imageWidth - width;
             const horizontalMargin = spaceAvailable / 2;
-            const verticalMargin = (availableHeight - height) / 3;
-            let xPos, yPos;
+            xPos =
+              margin +
+              horizontalMargin +
+              (index % 2 === 1 ? imageWidth + margin : 0);
 
-            if (index % 2 === 0 && index !== 0) {
-              pdf.addPage();
-            }
-
-            // Add title once per page
-            if (index % 2 === 0) {
-              pdf.setFontSize(14);
-              pdf.text(title, margin, margin + 10, { align: "left" });
-            }
-
-            if (
-              index % 2 === 1 ||
-              (index === frameData.length - 1 && frameData.length % 2 !== 0)
-            ) {
-              // Place image in the center if it's the last one and the number of images is odd
-              if (
-                index === frameData.length - 1 &&
-                frameData.length % 2 !== 0
-              ) {
-                xPos = pageWidth / 2 - width / 2;
-              } else {
-                xPos =
-                  margin +
-                  horizontalMargin +
-                  (index % 2) * (imageWidth + margin);
-              }
-              yPos = verticalMargin + spaceBeforeImage;
-            } else {
-              xPos =
-                margin + horizontalMargin + (index % 2) * (imageWidth + margin);
-              yPos = verticalMargin + spaceBeforeImage;
-            }
+            // Add frame number above the image
+            pdf.setFontSize(12);
+            pdf.text(`Frame ${frameNumber}`, xPos + 8, yPos - 3, {
+              align: "center",
+            });
 
             // Add the canvas image to the PDF
             pdf.addImage(canvas.toDataURL(), "JPEG", xPos, yPos, width, height);
@@ -134,10 +173,11 @@ const ActionsIcon = ({ ID, title, type }) => {
             if (promptTextY + lines.length * 5 > pageHeight - margin) {
               // Add a new page if the prompt text goes out of the page
               pdf.addPage();
-              pdf.setFontSize(14);
-              pdf.text(title, margin, margin + 10, { align: "left" });
-              yPos = margin + spaceBeforeImage;
-              xPos = margin;
+              pdf.setFontSize(16);
+              pdf.text(sceneTitle, pageWidth / 2, margin + 5, {
+                align: "center",
+              });
+              resetPositions();
               pdf.setFontSize(10);
               pdf.text(lines, xPos, yPos, { align: "left" });
             } else {
@@ -155,16 +195,19 @@ const ActionsIcon = ({ ID, title, type }) => {
               align: "right",
             });
 
+            frameNumber++;
             resolve();
           };
         });
       }
 
       // Save the PDF after all scenes are added
+      setPdfLoading(false);
       pdf.save(title);
-      handleClose();
+      setAnchorEl(null);
     } catch (error) {
       console.log(error, "error generating pdf");
+      setPdfLoading(false);
     }
   };
 
@@ -205,15 +248,21 @@ const ActionsIcon = ({ ID, title, type }) => {
             color: "greys.darkest",
           }}
         >
-          Export PDF
-          <img
-            src={ExportPdfIcon}
-            alt="Edit Icon"
-            style={{ width: "18px", height: "18px" }}
-          />
+          {pdfLoading ? "Exporting..." : "Export PDF"}
+          {pdfLoading ? (
+            <CircularProgress
+              sx={{ height: "16px !important", width: "16px !important" }}
+            />
+          ) : (
+            <img
+              src={ExportPdfIcon}
+              alt="Edit Icon"
+              style={{ width: "18px", height: "18px" }}
+            />
+          )}
         </MenuItem>
         <MenuItem
-          onClick={handleClose}
+          onClick={editTitlePopup}
           sx={{
             display: "flex",
             justifyContent: "space-between",

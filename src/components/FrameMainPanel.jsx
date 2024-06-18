@@ -1,5 +1,16 @@
 /* eslint-disable react/prop-types */
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+  alpha,
+  useTheme,
+} from "@mui/material";
 import LeftArrowIcon from "../Assets/Images/arrow-left-white.png";
 import RighttArrowIcon from "../Assets/Images/arrow-right-white.png";
 import EditIcon from "../Assets/Images/pencil.png";
@@ -8,6 +19,7 @@ import DownloadIcon from "../Assets/Images/download-circle.png";
 import { useEffect, useState } from "react";
 import { useFrame } from "../hooks/useFrame";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
+import { downloadImage } from "../utils/downloadImage";
 
 const FrameMainPanel = ({
   framesData,
@@ -35,8 +47,6 @@ const FrameMainPanel = ({
     display: "flex",
     flexDirection: "column",
     gap: "20px",
-    borderRight: "1px solid #ddd",
-    bgcolor: "white",
     borderRadius: "16px",
   };
 
@@ -107,7 +117,7 @@ const FrameMainPanel = ({
         } else if (aspectRatioForImages === "3:2") {
           canvasWidth = 550;
         } else if (aspectRatioForImages === "1:1") {
-          canvasWidth = 450;
+          canvasWidth = 650;
         } else {
           canvasWidth = imageCanvas.parentElement.clientWidth;
         }
@@ -154,58 +164,31 @@ const FrameMainPanel = ({
   return (
     <Box sx={mainPanelStyle}>
       {!isRegenerateScene && (
-        <>
-          <Box
+        <Box display={"flex"} alignItems={"center"}>
+          <Button
+            startIcon={<KeyboardArrowLeft />}
+            disabled={selectedFrame === 0}
             sx={{
-              position: "relative",
-              paddingTop: "10px",
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              px: 2,
+              bgcolor: "white",
+              color: "greys.darkest",
+              borderRadius: "20px",
+              px: 1,
+              transition: "all 0.2s ease",
+              "&:hover": {
+                bgcolor: alpha(theme.palette.greys.lightest, 0.5),
+              },
+            }}
+            onClick={() => {
+              selectedFrame > 0 ? setSelectedFrame(selectedFrame - 1) : null;
+              setSelectedFrameUrl(framesData[selectedFrame - 1].activeUrl);
             }}
           >
-            <IconButton
-              disabled={selectedFrame === 0}
-              onClick={() => {
-                selectedFrame > 0 ? setSelectedFrame(selectedFrame - 1) : null;
-                setSelectedFrameUrl(framesData[selectedFrame - 1].activeUrl);
-              }}
-            >
-              <KeyboardArrowLeft />
-            </IconButton>
-
-            <Typography
-              variant="body1"
-              sx={{
-                fontSize: "14px",
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%)", // Center align
-                textAlign: "center",
-              }}
-            >
-              Frame {selectedFrame + 1} / {framesData.length}
-            </Typography>
-
-            <IconButton
-              disabled={selectedFrame === framesData.length - 1}
-              onClick={() => {
-                selectedFrame < framesData.length - 1
-                  ? setSelectedFrame(selectedFrame + 1)
-                  : null;
-                setSelectedFrameUrl(framesData[selectedFrame + 1].activeUrl);
-              }}
-            >
-              <KeyboardArrowRight />
-            </IconButton>
-          </Box>
+            Previous
+          </Button>
           <Box
             sx={{
               position: "relative",
               py: 2,
-              width: "100%",
               height: "fit-content",
               marginX: "auto",
               display: "flex",
@@ -240,21 +223,7 @@ const FrameMainPanel = ({
                 onMouseMove={draw}
                 onMouseUp={stopDrawing}
               />
-              {/* <img
-              src={framesData[selectedFrame].framesUrl[0]}
-              alt={framesData[selectedFrame]["project name"]}
-              style={{
-                width: "100%",
-                height: "100%",
-                aspectRatio:"16/9",
-                objectFit: "cover",
-                filter: `grayscale(${
-                  framesData[selectedFrame].colorType === "black&White"
-                    ? "1"
-                    : "0"
-                })`,
-              }}
-            /> */}
+
               <Box
                 sx={{
                   display: isEditBarOpen ? "none" : "block",
@@ -308,30 +277,12 @@ const FrameMainPanel = ({
                   }}
                 >
                   <Button
-                    onClick={() => setEditBar(true)}
-                    sx={{
-                      bgcolor: "greys.darkest",
-                      color: "white",
-                      fontSize: "12px",
-                      borderRadius: "8px",
-                      "&:hover": { bgcolor: "greys.darker" },
-                      width: "fit-content",
-                    }}
-                  >
-                    <img
-                      src={EditIcon}
-                      style={{
-                        width: "15px",
-                        height: "15px",
-                        filter: "invert(100%)",
-                        marginRight: "10px",
-                      }}
-                    />
-                    Edit
-                  </Button>
-                  {/* <FrameEditButton frameData={framesData[selectedFrame]} /> */}
-                  <Button
-                    // onClick={handleDownload}
+                    onClick={() =>
+                      downloadImage(
+                        framesData[selectedFrame]?.framesUrl[selectedFrameUrl] +
+                          "?not-from-cache-please"
+                      )
+                    }
                     sx={{
                       bgcolor: "greys.darkest",
                       color: "white",
@@ -351,28 +302,6 @@ const FrameMainPanel = ({
                       }}
                     />
                     Download
-                  </Button>
-                  <Button
-                    // onClick={handleDelete}
-                    sx={{
-                      bgcolor: "greys.darkest",
-                      color: "white",
-                      fontSize: "12px",
-                      borderRadius: "8px",
-                      "&:hover": { bgcolor: "greys.darker" },
-                      width: "fit-content",
-                    }}
-                  >
-                    <img
-                      src={DeleteIcon}
-                      style={{
-                        width: "15px",
-                        height: "15px",
-                        filter: "invert(100%)",
-                        marginRight: "10px",
-                      }}
-                    />
-                    Delete
                   </Button>
                 </Box>
                 <Button
@@ -458,45 +387,28 @@ const FrameMainPanel = ({
               </Box>
             </div>
           </Box>
-          {/* <Box
+          <Button
+            disabled={selectedFrame === framesData.length - 1}
             sx={{
-              mt: 1,
-              backgroundColor: "white",
-              paddingLeft: "10px",
-              border: "1px solid #F1F1F1",
-              borderRadius: "8px",
+              bgcolor: "white",
+              color: "greys.darkest",
+              borderRadius: "20px",
+              transition: "all 0.2s ease",
+              "&:hover": {
+                bgcolor: alpha(theme.palette.greys.lightest, 0.5),
+              },
+            }}
+            endIcon={<KeyboardArrowRight />}
+            onClick={() => {
+              selectedFrame < framesData.length - 1
+                ? setSelectedFrame(selectedFrame + 1)
+                : null;
+              setSelectedFrameUrl(framesData[selectedFrame + 1].activeUrl);
             }}
           >
-            <Typography
-              variant="body"
-              component="div"
-              gutterBottom
-              style={{
-                marginTop: "5px",
-                fontSize: "12px",
-                fontWeight: "500",
-                color: "#BEBEBE",
-              }}
-            >
-              Prompt
-            </Typography>
-            <Typography
-              variant="body"
-              component="div"
-              gutterBottom
-              style={{
-                marginTop: "5px",
-                fontSize: "12px",
-                fontWeight: "500",
-                color: "#4D4D4D",
-                height: "52px",
-                overflowY: "scroll",
-              }}
-            >
-              {framesData[selectedFrame].prompt}
-            </Typography>
-          </Box> */}
-        </>
+            Next
+          </Button>
+        </Box>
       )}
       {isRegenerateScene && (
         <Box

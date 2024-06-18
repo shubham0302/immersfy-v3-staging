@@ -3,7 +3,16 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import { Box, MenuItem, Modal, Popover, Skeleton } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  MenuItem,
+  Modal,
+  Popover,
+  Skeleton,
+} from "@mui/material";
 import { styled } from "@mui/system";
 import DownloadIcon from "../Assets/Images/download-circle.png";
 import DeleteIcon from "../Assets/Images/delete.png";
@@ -14,11 +23,12 @@ import FrameFooterPanel from "./FrameFooterPanel";
 import { useFrame } from "../hooks/useFrame";
 import { downloadImage } from "../utils/downloadImage";
 import FrameEditMainComponent from "./FrameEditMainComponent";
-import { MoreVertOutlined } from "@mui/icons-material";
+import { ExpandMore, MoreVertOutlined } from "@mui/icons-material";
 import GenerateFrameMain from "./GenerateFrameMain";
 import GeneralMainPanel from "./GeneralMainPanel";
 import { useAppDispatch } from "../store";
 import { setDeletePopup } from "../store/slice/popup.reducer";
+import HeaderEditFrame from "./HeaderEditFrame";
 
 const Overlay = styled("div")({
   position: "absolute",
@@ -87,7 +97,6 @@ const modalStyle = {
   bgcolor: "#EBEBEB", // Ensure background color is fully opaque
   boxShadow: 24,
   p: 1,
-  borderRadius: "10px",
   outline: "none",
   display: "flex",
   flexDirection: "column",
@@ -95,7 +104,12 @@ const modalStyle = {
   backgroundSize: "25px 25px",
 };
 
-const FramesGrid = ({ sceneData }) => {
+const FramesGrid = ({ sceneData, title }) => {
+  const [expanded, setExpanded] = useState("panel1");
+
+  const handleChange = (panel) => (event, isExpanded) => {
+    setExpanded(isExpanded ? panel : false);
+  };
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const [selectedFrame, setSelectedFrame] = useState(0);
@@ -208,14 +222,14 @@ const FramesGrid = ({ sceneData }) => {
                       }}
                     />
                     <Overlay>
-                      <LeftButtonContainer>
+                      {/* <LeftButtonContainer>
                         <CircleButton>
                           <img
                             src={MoveIcon}
                             style={{ width: "20px", height: "20px" }}
                           />
                         </CircleButton>
-                      </LeftButtonContainer>
+                      </LeftButtonContainer> */}
                       <RightButtonContainer>
                         <CircleButton
                           onClick={(e) => {
@@ -272,7 +286,7 @@ const FramesGrid = ({ sceneData }) => {
         <Box sx={modalStyle}>
           {
             <>
-              <HeaderFrame handleClose={handleClose} />
+              <HeaderEditFrame handleClose={handleClose} title={title} />
 
               <Box
                 sx={{
@@ -305,121 +319,72 @@ const FramesGrid = ({ sceneData }) => {
                   sx={{
                     minWidth: "5%",
                     position: "relative",
-                    width:
-                      isRegenerateScene || isEditBarOpen || isGeneralSetting
-                        ? "30%"
-                        : "auto",
+                    width: "30%",
+                    height: "82vh",
+                    overflowY: "scroll",
+                    bgcolor: "white",
+                    borderRadius: "16px",
                   }}
                 >
-                  <Box
-                    display={"flex"}
-                    position={"absolute"}
-                    zIndex={100}
-                    right={0}
-                    top={0}
-                    height={"100%"}
-                    bgcolor={"white"}
-                    sx={{
-                      textOrientation: "sideways-right",
-                      writingMode: "vertical-rl",
-                      rotate: "180deg",
-                    }}
-                    px={1}
-                    justifyContent={"space-evenly"}
-                    boxShadow={5}
-                    alignItems={"center"}
-                    borderRadius={4}
+                  {" "}
+                  <Accordion
+                    expanded={expanded === "panel1"}
+                    onChange={handleChange("panel1")}
                   >
-                    <Typography
-                      onClick={() => {
-                        setEditBar(!isEditBarOpen);
-                        setRegenerateScene(false);
-                        setGeneralSetting(false);
-                      }}
-                      sx={{
-                        cursor: "pointer",
-                        p: 1,
-                        borderLeft: isEditBarOpen ? "2px solid" : 0,
-                        borderColor: "primary.light",
-                      }}
-                    >
-                      Inpainting
-                    </Typography>
-                    <Typography
-                      onClick={() => {
-                        setEditBar(false);
-                        setRegenerateScene(false);
-                        setGeneralSetting(!isGeneralSetting);
-                      }}
-                      sx={{
-                        cursor: "pointer",
-                        p: 1,
-                        borderLeft: isGeneralSetting ? "2px solid" : 0,
-                        borderColor: "primary.light",
-                      }}
-                    >
-                      General Settings
-                    </Typography>
-                    <Typography
-                      onClick={() => {
-                        setEditBar(false);
-                        setRegenerateScene(!isRegenerateScene);
-                        setGeneralSetting(false);
-                      }}
-                      sx={{
-                        cursor: "pointer",
-                        p: 1,
-                        borderLeft: isRegenerateScene ? "2px solid" : 0,
-                        borderColor: "primary.light",
-                      }}
+                    <AccordionSummary
+                      expandIcon={<ExpandMore />}
+                      onClick={() => setEditBar(false)}
                     >
                       Regenerate
-                    </Typography>
-                  </Box>
-                  {isRegenerateScene && (
-                    <Box
-                      sx={{
-                        bgcolor: "white",
-                        borderRadius: "12px",
-                        p: 2,
-                        width: "100%",
-                        height: "100%",
-                        pr: 10,
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          mb: 2,
-                        }}
-                      >
-                        <Typography
-                          sx={{
-                            fontSize: "14px",
-                            fontWeight: "500",
-                            color: "secondary.dark",
-                          }}
-                        >
-                          Generate Frame
-                        </Typography>
-                      </Box>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      {" "}
                       <GenerateFrameMain
+                        frameData={frameData}
+                        closeEditBar={closeEditBar}
+                        setSelectedFrameUrl={setSelectedFrameUrl}
                         closeGenerateFrame={closeGenerateFrame}
                         selectedFrame={selectedFrame}
                       />
-                    </Box>
-                  )}
-                  {isEditBarOpen && (
-                    <Box
-                      sx={{
-                        bgcolor: "white",
-                        borderRadius: "12px",
-                        p: 2,
-                        width: "100%",
-                        height: "100%",
-                        pr: 10,
+                    </AccordionDetails>
+                  </Accordion>
+                  <Accordion
+                    expanded={expanded === "panel2"}
+                    onChange={handleChange("panel2")}
+                  >
+                    <AccordionSummary
+                      expandIcon={<ExpandMore />}
+                      onClick={() => setEditBar(false)}
+                    >
+                      Reference Generation{" "}
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      {" "}
+                      <GeneralMainPanel
+                        frameData={frameData}
+                        closeEditBar={closeEditBar}
+                        setSelectedFrameUrl={setSelectedFrameUrl}
+                        closeGenerateFrame={closeGenerateFrame}
+                        selectedFrame={selectedFrame}
+                      />
+                    </AccordionDetails>
+                  </Accordion>
+                  <Accordion
+                    expanded={expanded === "panel3"}
+                    onChange={handleChange("panel3")}
+                  >
+                    <AccordionSummary
+                      expandIcon={<ExpandMore />}
+                      onClick={() => {
+                        setEditBar((prev) => !prev);
+                        setDraw();
                       }}
                     >
+                      Generative Fill
+                    </AccordionSummary>
+                    <AccordionDetails>
                       <FrameEditMainComponent
+                        isEditBarOpen={isEditBarOpen}
                         drawButton={drawButton}
                         eraseButton={eraseButton}
                         setDraw={setDraw}
@@ -432,26 +397,12 @@ const FramesGrid = ({ sceneData }) => {
                         closeEditBar={closeEditBar}
                         setSelectedFrameUrl={setSelectedFrameUrl}
                       />
-                    </Box>
-                  )}
-                  {isGeneralSetting && (
-                    <Box
-                      sx={{
-                        bgcolor: "white",
-                        borderRadius: "12px",
-                        p: 2,
-                        width: "100%",
-                        height: "100%",
-                        pr: 10,
-                      }}
-                    >
-                      <GeneralMainPanel />
-                    </Box>
-                  )}
+                    </AccordionDetails>
+                  </Accordion>
                 </Box>
                 {/* edit bar over */}
               </Box>
-              <Box
+              {/* <Box
                 sx={{
                   display: "flex",
                   justifyContent: "center",
@@ -466,7 +417,7 @@ const FramesGrid = ({ sceneData }) => {
                   isRegenerateScene={isRegenerateScene}
                   setRegenerateScene={setRegenerateScene}
                 />
-              </Box>
+              </Box> */}
             </>
           }
         </Box>

@@ -20,7 +20,7 @@ import {
   PhotoFilter,
   Save,
 } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   cameraAngleData,
   colorTypeData,
@@ -43,6 +43,7 @@ const FrameEditMainComponent = ({
   selectedFrame,
   closeEditBar,
   setSelectedFrameUrl,
+  isEditBarOpen,
 }) => {
   const { updateRegeneratedFrame } = useFrame();
   const [loading, setLoading] = useState(false);
@@ -54,6 +55,12 @@ const FrameEditMainComponent = ({
     shotType: shotTypeData[0].value,
     inpaintingType: "",
   });
+
+  useEffect(() => {
+    if (!isEditBarOpen) {
+      handleClearCanvas();
+    }
+  }, [handleClearCanvas, isEditBarOpen]);
 
   const handleGenerateClick = async () => {
     setLoading(true);
@@ -129,7 +136,7 @@ const FrameEditMainComponent = ({
             placeholder="Enter the description"
             multiline
             variant="outlined"
-            rows={7}
+            rows={3}
             value={requestData.description}
             onChange={(e) =>
               setRequestData((prev) => ({
@@ -154,74 +161,73 @@ const FrameEditMainComponent = ({
 
         <Divider sx={{ backgroundColor: "#F1F1F1", width: "100%" }} />
       </Box>
-      <Box py={2} display={"flex"} flexDirection={"column"} gap={2} >
+      <Box py={2} display={"flex"} flexDirection={"column"} gap={2}>
         <Typography
-            sx={{
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "secondary.dark",
-            }}
-            variant="subtitle1"
-            display="flex"
-            alignItems="center"
-          >
-            <img
-              src={EnterScriptIcon}
-              alt="Icon1"
-              style={{ marginRight: "8px", width: "16px" }}
-            />
-            Edit Options
-          </Typography>
-            <Select
-            value={requestData.inpaintingType}
-            onChange={(e) =>
-              setRequestData((prev) => ({
-                ...prev,
-                inpaintingType: e.target.value,
-              }))
-            }
-            displayEmpty
-            fullWidth
-            placeholder="select"
-            InputProps={{
-              style: {
-                padding: "0px",
-              },
-            }}
-            sx={{
-              fontSize: "14px",
-              fontWeight: "500",
-              boxShadow: "none",
-              border: "none",
-              "& .MuiOutlinedInput-input": {
-                padding: 0,
-              },
-              ".MuiOutlinedInput-notchedOutline": {
+          sx={{
+            fontSize: "14px",
+            fontWeight: "500",
+            color: "secondary.dark",
+          }}
+          variant="subtitle1"
+          display="flex"
+          alignItems="center"
+        >
+          <img
+            src={EnterScriptIcon}
+            alt="Icon1"
+            style={{ marginRight: "8px", width: "16px" }}
+          />
+          Edit Options
+        </Typography>
+        <Select
+          value={requestData.inpaintingType}
+          onChange={(e) =>
+            setRequestData((prev) => ({
+              ...prev,
+              inpaintingType: e.target.value,
+            }))
+          }
+          displayEmpty
+          fullWidth
+          placeholder="select"
+          InputProps={{
+            style: {
+              padding: "0px",
+            },
+          }}
+          sx={{
+            fontSize: "14px",
+            fontWeight: "500",
+            boxShadow: "none",
+            border: "none",
+            "& .MuiOutlinedInput-input": {
+              padding: 0,
+            },
+            ".MuiOutlinedInput-notchedOutline": {
+              border: 0,
+            },
+            "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+              {
                 border: 0,
               },
-              "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-                {
-                  border: 0,
-                },
-              "& .MuiSelect-icon": {
-                transform: "rotate(0deg)",
-              },
-              bgcolor:"grey.200",
-              py:1,
-              px:2,
-              borderRadius:5
-            }}
-            IconComponent={KeyboardArrowDown}
-          >
-            <MenuItem value="">Select</MenuItem>
-            {inpaintingTypeData.map((item, idx) => (
-              <MenuItem key={idx} value={item.value}>
-                {item.title}
-              </MenuItem>
-            ))}
-          </Select>
+            "& .MuiSelect-icon": {
+              transform: "rotate(0deg)",
+            },
+            bgcolor: "grey.200",
+            py: 1,
+            px: 2,
+            borderRadius: 5,
+          }}
+          IconComponent={KeyboardArrowDown}
+        >
+          <MenuItem value="">Select</MenuItem>
+          {inpaintingTypeData.map((item, idx) => (
+            <MenuItem key={idx} value={item.value}>
+              {item.title}
+            </MenuItem>
+          ))}
+        </Select>
         <Divider sx={{ backgroundColor: "#F1F1F1", width: "100%" }} />
-
       </Box>
 
       <Box
@@ -230,22 +236,22 @@ const FrameEditMainComponent = ({
         }}
       >
         <Typography
-            sx={{
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "secondary.dark",
-            }}
-            variant="subtitle1"
-            display="flex"
-            alignItems="center"
-          >
-            <img
-              src={EnterScriptIcon}
-              alt="Icon1"
-              style={{ marginRight: "8px", width: "16px" }}
-            />
-            Brushes
-          </Typography>
+          sx={{
+            fontSize: "14px",
+            fontWeight: "500",
+            color: "secondary.dark",
+          }}
+          variant="subtitle1"
+          display="flex"
+          alignItems="center"
+        >
+          <img
+            src={EnterScriptIcon}
+            alt="Icon1"
+            style={{ marginRight: "8px", width: "16px" }}
+          />
+          Brushes
+        </Typography>
       </Box>
 
       <Box
@@ -259,22 +265,19 @@ const FrameEditMainComponent = ({
         <Button
           onClick={setDraw}
           sx={{
-            bgcolor: drawButton && !eraseButton?"#e6e3e3":"none",
+            bgcolor: drawButton && !eraseButton ? "#e6e3e3" : "none",
             borderRadius: "8px",
             padding: "8px",
             width: "fit-content",
             minWidth: "fit-content",
           }}
         >
-          <img
-            src={DrawIcon}
-            style={{ width: "20px", height: "20px"}}
-          />
+          <img src={DrawIcon} style={{ width: "20px", height: "20px" }} />
         </Button>
         <Button
           onClick={setErase}
           sx={{
-            bgcolor: eraseButton?"#e6e3e3":"none",
+            bgcolor: eraseButton ? "#e6e3e3" : "none",
             borderRadius: "8px",
             padding: "8px",
             width: "fit-content",
@@ -283,7 +286,11 @@ const FrameEditMainComponent = ({
         >
           <img
             src={EraseIcon}
-            style={{ width: "20px", height: "20px", filter:eraseButton?"grayscale(1)":"grayscale(0)" }}
+            style={{
+              width: "20px",
+              height: "20px",
+              filter: eraseButton ? "grayscale(1)" : "grayscale(0)",
+            }}
           />
         </Button>
         <Button
@@ -295,45 +302,42 @@ const FrameEditMainComponent = ({
             minWidth: "fit-content",
           }}
         >
-          <img
-            src={ResetIcon}
-            style={{ width: "20px", height: "20px" }}
-          />
+          <img src={ResetIcon} style={{ width: "20px", height: "20px" }} />
         </Button>
       </Box>
       <Box
-            sx={{
-              mb: 1,
-            }}
-          >
-              <Typography
-                sx={{
-                  fontSize: "14px",
-                  fontWeight: "500",
-                  color: "secondary.dark",
-                }}
-              >
-                Brush Size
-              </Typography>
-          </Box>
-          <Slider
-            value={brushSize}
-            onChange={handleSliderChange}
-            //   aria-labelledby="discrete-slider"
-            //   valueLabelDisplay="auto"
-            step={1}
-            min={1}
-            max={100}
-            sx={{
-              "& .MuiSlider-rail": {
-                backgroundColor: "primary.lightest", // Change the color of the slider track
-              },
-              "& .MuiSlider-thumb": {
-                width: "15px",
-                height: "15px",
-              },
-            }}
-          />
+        sx={{
+          mb: 1,
+        }}
+      >
+        <Typography
+          sx={{
+            fontSize: "14px",
+            fontWeight: "500",
+            color: "secondary.dark",
+          }}
+        >
+          Brush Size
+        </Typography>
+      </Box>
+      <Slider
+        value={brushSize}
+        onChange={handleSliderChange}
+        //   aria-labelledby="discrete-slider"
+        //   valueLabelDisplay="auto"
+        step={1}
+        min={1}
+        max={100}
+        sx={{
+          "& .MuiSlider-rail": {
+            backgroundColor: "primary.lightest", // Change the color of the slider track
+          },
+          "& .MuiSlider-thumb": {
+            width: "15px",
+            height: "15px",
+          },
+        }}
+      />
 
       <Box
         sx={{

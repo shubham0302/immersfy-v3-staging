@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 const ScenesGrid = ({ projectData }) => {
   const navigate = useNavigate();
+
   return (
     <Grid container spacing={2}>
       {projectData?.map((project, index) => (
@@ -104,7 +105,7 @@ const ScenesGrid = ({ projectData }) => {
                 >
                   <ActionsIcon
                     ID={{ sceneId: project._id }}
-                    title={"Scene " + index + 1}
+                    title={project.title}
                     type="scene"
                   />
                 </div>

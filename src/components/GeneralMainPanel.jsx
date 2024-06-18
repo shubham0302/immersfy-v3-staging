@@ -11,8 +11,9 @@ import {
 import { useState } from "react";
 import EnterScriptIcon from "../Assets/Images/enterscripticon.png";
 import { inpaintingTypeData } from "../Data/dropdownData";
-import { Close, KeyboardArrowDown, Save } from "@mui/icons-material";
+import { Close, KeyboardArrowDown, Save, Upload } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
+import { useFrame } from "../hooks/useFrame";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -26,11 +27,18 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const GeneralMainPanel = () => {
+const GeneralMainPanel = ({
+  frameData,
+  selectedFrame,
+  closeEditBar,
+  setSelectedFrameUrl,
+}) => {
+  const { referenceImageFunction } = useFrame();
+
   const [formDate, setFormData] = useState({
     prompt: "",
-    options: "",
-    style: "sketch",
+
+    style: "",
     image: "",
   });
   const [loading, setLoading] = useState(false);
@@ -44,8 +52,21 @@ const GeneralMainPanel = () => {
       setFormData((prev) => ({ ...prev, image: reader.result }));
     };
   };
-  const handleGenerateClick = () => {
-    console.log(formDate);
+  const handleGenerateClick = async () => {
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("reference_image", formDate.image);
+    formData.append("prompt", formDate.prompt);
+    formData.append("frame_id", frameData[selectedFrame]._id);
+    formData.append("style", formDate.style);
+
+    await referenceImageFunction(
+      formData,
+      selectedFrame,
+      closeEditBar,
+      setLoading,
+      setSelectedFrameUrl
+    );
   };
   return (
     <Box>
@@ -94,75 +115,8 @@ const GeneralMainPanel = () => {
 
         <Divider sx={{ backgroundColor: "#F1F1F1", width: "100%" }} />
       </Box>
-      <Box>
-        <Box sx={{ py: 2 }}>
-          <Typography
-            sx={{
-              fontSize: "14px",
-              fontWeight: "500",
-              color: "secondary.dark",
-            }}
-            variant="subtitle1"
-            display="flex"
-            alignItems="center"
-          >
-            <img
-              src={EnterScriptIcon}
-              alt="Icon1"
-              style={{ marginRight: "8px", width: "16px" }}
-            />
-            Edit options
-          </Typography>
-          <Select
-            value={formDate.options}
-            name="options"
-            onChange={handleChange}
-            displayEmpty
-            fullWidth
-            placeholder="select"
-            InputProps={{
-              style: {
-                padding: "0px",
-              },
-            }}
-            sx={{
-              fontSize: "14px",
-              fontWeight: "500",
-              boxShadow: "none",
-              border: "none",
-              "& .MuiOutlinedInput-input": {
-                padding: 0,
-              },
-              ".MuiOutlinedInput-notchedOutline": {
-                border: 0,
-              },
-              "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-                {
-                  border: 0,
-                },
-              "& .MuiSelect-icon": {
-                transform: "rotate(0deg)",
-              },
-              bgcolor: "grey.200",
-              py: 1,
-              px: 2,
-              mt: 1,
-              borderRadius: 5,
-            }}
-            IconComponent={KeyboardArrowDown}
-          >
-            <MenuItem value="">Select</MenuItem>
-            {inpaintingTypeData.map((item, idx) => (
-              <MenuItem key={idx} value={item.value}>
-                {item.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </Box>
 
-        <Divider sx={{ backgroundColor: "#F1F1F1", width: "100%" }} />
-      </Box>
-      <Box>
+      {/* <Box>
         <Box sx={{ py: 2 }}>
           <Typography
             sx={{
@@ -229,7 +183,7 @@ const GeneralMainPanel = () => {
         </Box>
 
         <Divider sx={{ backgroundColor: "#F1F1F1", width: "100%" }} />
-      </Box>
+      </Box> */}
       <Box>
         <Box sx={{ py: 2 }}>
           <Typography
@@ -254,7 +208,7 @@ const GeneralMainPanel = () => {
             sx={{
               width: "100%",
               aspectRatio: "5/3",
-              bgcolor: "grey.300",
+              bgcolor: "greys.lighter",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
@@ -269,6 +223,7 @@ const GeneralMainPanel = () => {
           >
             {formDate.image.length === 0 ? (
               <>
+                <Upload />
                 Upload Image
                 <VisuallyHiddenInput
                   onClick={(e) => {
@@ -300,6 +255,72 @@ const GeneralMainPanel = () => {
           </Box>
         </Box>
       </Box>
+
+      <Divider sx={{ backgroundColor: "#F1F1F1", width: "100%" }} />
+
+      <Box>
+        <Box sx={{ py: 2 }}>
+          <Typography
+            sx={{
+              fontSize: "14px",
+              fontWeight: "500",
+              color: "secondary.dark",
+            }}
+            variant="subtitle1"
+            display="flex"
+            alignItems="center"
+          >
+            <img
+              src={EnterScriptIcon}
+              alt="Icon1"
+              style={{ marginRight: "8px", width: "16px" }}
+            />
+            Edit options
+          </Typography>
+          <Select
+            value={formDate.style}
+            name="style"
+            onChange={handleChange}
+            displayEmpty
+            fullWidth
+            placeholder="select"
+            InputProps={{
+              style: {
+                padding: "0px",
+              },
+            }}
+            sx={{
+              fontSize: "14px",
+              fontWeight: "500",
+              boxShadow: "none",
+              border: "none",
+              "& .MuiOutlinedInput-input": {
+                padding: 0,
+              },
+              ".MuiOutlinedInput-notchedOutline": {
+                border: 0,
+              },
+              "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                {
+                  border: 0,
+                },
+              "& .MuiSelect-icon": {
+                transform: "rotate(0deg)",
+              },
+              bgcolor: "grey.200",
+              py: 1,
+              px: 2,
+              mt: 1,
+              borderRadius: 5,
+            }}
+            IconComponent={KeyboardArrowDown}
+          >
+            <MenuItem value="">Select</MenuItem>
+            <MenuItem value={"pose"}>Pose</MenuItem>
+            <MenuItem value={"structure"}>Structure</MenuItem>
+          </Select>
+        </Box>
+      </Box>
       <Box
         sx={{
           display: "flex",
@@ -310,7 +331,6 @@ const GeneralMainPanel = () => {
           disabled={
             formDate.prompt === "" ||
             formDate.image === "" ||
-            formDate.options === "" ||
             formDate.style === ""
           }
           onClick={handleGenerateClick}

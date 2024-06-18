@@ -7,6 +7,7 @@ import LeftArrow from "../Assets/Images/arrow-left.png";
 import NewSceneButton from "./NewSceneButton";
 import NewCharacterButton from "./NewCharacterButton";
 import { useNavigate } from "react-router-dom";
+import ExportAllSceneButton from "./ExportAllSceneButton";
 const HeaderProject = ({ asset }) => {
   const navigate = useNavigate();
   return (
@@ -40,6 +41,8 @@ const HeaderProject = ({ asset }) => {
           {/* New Project Button */}
 
           {asset === "scenes" ? <NewSceneButton /> : <NewCharacterButton />}
+
+          <ExportAllSceneButton />
 
           {/* <div style={{ marginRight: "24px" }}>
             <SwitchTheme />

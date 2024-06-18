@@ -22,27 +22,38 @@ import {
 } from "../Data/dropdownData";
 import { LoadingButton } from "@mui/lab";
 import { postData } from "../utils/serverHelper";
+import { useFrame } from "../hooks/useFrame";
 
-const GenerateFrameMain = () => {
+const GenerateFrameMain = ({
+  frameData,
+  selectedFrame,
+  closeEditBar,
+  setSelectedFrameUrl,
+}) => {
   const [loading, setLoading] = useState(false);
+  const { promptRegenerateScene } = useFrame();
   const [requestData, setRequestData] = useState({
-    description: "",
+    description: frameData[selectedFrame].prompt || "",
     cameraAngle: cameraAngleData[0].value,
     style: stylesData[0].value,
     colorType: colorTypeData[0].value,
     shotType: shotTypeData[0].value,
+    visualStyle: "sketch",
   });
 
   const handleGenerateClick = async () => {
     setLoading(true);
-    try {
-      await postData("/frame/regenerate_scene", {
-        data: requestData.description,
-      });
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-    }
+    await promptRegenerateScene(
+      {
+        prompt: requestData.description,
+        frame_id: frameData[selectedFrame]._id,
+        visualStyle: requestData.visualStyle,
+      },
+      selectedFrame,
+      closeEditBar,
+      setLoading,
+      setSelectedFrameUrl
+    );
   };
 
   const dropdownData = [
@@ -176,7 +187,7 @@ const GenerateFrameMain = () => {
             placeholder="Enter the description"
             multiline
             variant="outlined"
-            rows={14}
+            rows={9}
             value={requestData.description}
             onChange={(e) =>
               setRequestData((prev) => ({
@@ -198,7 +209,7 @@ const GenerateFrameMain = () => {
         </Box>
       </Box>
 
-      {dropdownData.map((dropdown, index) => (
+      {/* {dropdownData.map((dropdown, index) => (
         <Box key={index}>
           <Box
             sx={{
@@ -269,7 +280,69 @@ const GenerateFrameMain = () => {
             <Divider sx={{ backgroundColor: "#F1F1F1", width: "100%" }} />
           </Box>
         </Box>
-      ))}
+      ))} */}
+
+      <Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            py: 2,
+            gap: 1,
+          }}
+        >
+          <Box display={"flex"} alignItems={"center"} gap={1}>
+            <PhotoCamera />
+            <Typography
+              sx={{
+                fontSize: "14px",
+                fontWeight: "500",
+                color: "secondary.dark",
+              }}
+              display="flex"
+              alignItems="center"
+            >
+              Visual Style
+            </Typography>
+          </Box>
+          <Select
+            value={requestData.visualStyle}
+            onChange={(e) =>
+              setRequestData((prev) => ({
+                ...prev,
+                visualStyle: e.target.value,
+              }))
+            }
+            sx={{
+              padding: "0px",
+              fontSize: "14px",
+              fontWeight: "500",
+              boxShadow: "none",
+              border: "none",
+              "& .MuiOutlinedInput-input": {
+                padding: 0,
+              },
+              ".MuiOutlinedInput-notchedOutline": {
+                border: 0,
+              },
+              "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                {
+                  border: 0,
+                },
+              "& .MuiSelect-icon": {
+                transform: "rotate(0deg)",
+              },
+            }}
+            IconComponent={KeyboardArrowDown}
+          >
+            <MenuItem value={"sketch"}>Sketch</MenuItem>
+            <MenuItem value={"cinematic"}>Cinematic</MenuItem>
+          </Select>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
+          <Divider sx={{ backgroundColor: "#F1F1F1", width: "100%" }} />
+        </Box>
+      </Box>
 
       <Box
         sx={{

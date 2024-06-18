@@ -61,6 +61,17 @@ export const useScene = (fetchScenes = false) => {
     [dispatch, getScene, navigate, projectId]
   );
 
+  const getSceneDetails = useCallback(async (id) => {
+    try {
+      const data = await getData(`/scene/details?sceneId=${id}`);
+
+      const sceneTitleWithId = { title: data.data.title };
+      return sceneTitleWithId;
+    } catch (error) {
+      console.log(error, "errror fecthing scenes");
+    }
+  }, []);
+
   useEffect(() => {
     if (fetchScenes) {
       getScene();
@@ -74,6 +85,7 @@ export const useScene = (fetchScenes = false) => {
     errorMessage,
     createScene,
     getScene,
+    getSceneDetails,
   };
 };
 

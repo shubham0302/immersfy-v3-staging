@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import {
   Alert,
   Box,
+  Checkbox,
   MenuItem,
   Modal,
   Select,
@@ -45,6 +46,15 @@ const NewSceneButton = () => {
   const projectScenes = useSelector((state) => state.scene.data);
   const [open, setOpen] = useState(false);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [selectNumberOfFrame, setSelectNumberOfFrame] = useState(false);
+
+  useEffect(() => {
+    if (!selectNumberOfFrame) {
+      setFormData((prev) => ({ ...prev, framesNumber: 0 }));
+    } else {
+      setFormData((prev) => ({ ...prev, framesNumber: 1 }));
+    }
+  }, [selectNumberOfFrame]);
 
   const { checkEligibility } = useEligibility();
   const handleOpen = async () => {
@@ -395,7 +405,6 @@ const NewSceneButton = () => {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              mb: 2,
             }}
           >
             <Typography
@@ -403,16 +412,45 @@ const NewSceneButton = () => {
                 fontSize: "14px",
                 fontWeight: "500",
                 color: "secondary.dark",
+                cursor: "pointer",
               }}
               variant="subtitle1"
               display="flex"
               alignItems="center"
+              onClick={() => setSelectNumberOfFrame((prev) => !prev)}
             >
               <img
                 src={FramesIcon}
                 alt="Icon1"
                 style={{ marginRight: "8px", width: "16px" }}
               />
+              Select Number of frames
+            </Typography>
+
+            <Checkbox
+              checked={selectNumberOfFrame}
+              onChange={(e) => setSelectNumberOfFrame(e.target.checked)}
+            />
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+            }}
+          >
+            <Typography
+              sx={{
+                fontSize: "14px",
+                fontWeight: "500",
+                color: selectNumberOfFrame ? "secondary.dark" : "greys.light",
+                ml: "24px",
+              }}
+              variant="subtitle1"
+              display="flex"
+              alignItems="center"
+            >
               Number of Frames
             </Typography>
 
@@ -423,11 +461,23 @@ const NewSceneButton = () => {
                 alignItems: "center",
               }}
             >
-              <IconButton onClick={handleDecrement}>
+              <IconButton
+                onClick={handleDecrement}
+                disabled={!selectNumberOfFrame}
+              >
                 <KeyboardArrowDownIcon />
               </IconButton>
-              <Typography>{formData.framesNumber}</Typography>
-              <IconButton onClick={handleIncrement}>
+              <Typography
+                sx={{
+                  color: selectNumberOfFrame ? "secondary.dark" : "greys.light",
+                }}
+              >
+                {formData.framesNumber}
+              </Typography>
+              <IconButton
+                onClick={handleIncrement}
+                disabled={!selectNumberOfFrame}
+              >
                 <KeyboardArrowUpIcon />
               </IconButton>
             </Box>

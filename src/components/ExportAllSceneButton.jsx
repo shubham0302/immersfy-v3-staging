@@ -5,13 +5,21 @@ import ExportPdfIcon from "../Assets/Images/pdf.png";
 import DownloadCircleIcon from "../Assets/Images/download-circle.png";
 import { useState } from "react";
 import jsPDF from "jspdf";
-import { useFrame } from "../hooks/useFrame";
-import { useSceneDetails } from "../hooks/useScene";
-const ExportAllButton = () => {
-  const { sceneDetails } = useSceneDetails();
+import { useProject } from "../hooks/useProject";
+import { useParams, useSearchParams } from "react-router-dom";
+import { useScene } from "../hooks/useScene";
+const ExportAllSceneButton = () => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [pdfLoading, setPdfLoading] = useState(false);
+  const { getAllScenes } = useProject();
+
+  const { getSceneDetails } = useScene();
+
+  const [searchParams] = useSearchParams();
+
+  const { projectId } = useParams();
+
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -20,7 +28,6 @@ const ExportAllButton = () => {
   };
   const open = Boolean(anchorEl);
   const id = open ? "simple-popover" : undefined;
-  const { frameData } = useFrame();
 
   const downloadPDF = async (event) => {
     event.stopPropagation();
@@ -32,12 +39,14 @@ const ExportAllButton = () => {
       const margin = 10;
       const spaceBeforeImage = 20; // Adjust this value to add space before the image
       const imageWidth = (pageWidth - 3 * margin) / 2; // Space for two images per page
+      const frameData = await getAllScenes(projectId);
+      const title = searchParams.get("title");
 
       let currentScene = null;
       let frameNumber = 1;
       let xPos = margin;
       let yPos = spaceBeforeImage + margin;
-      let sceneTitle = sceneDetails.title || "";
+      let sceneTitle = title || "";
 
       const resetPositions = () => {
         xPos = margin;
@@ -62,6 +71,10 @@ const ExportAllButton = () => {
           // if (index !== 0) {
           //   pdf.addPage();
           // }
+
+          const data = await getSceneDetails(scene?.scene);
+
+          sceneTitle = data.title;
 
           // Add the title for the new scene
           pdf.setFontSize(16);
@@ -158,13 +171,14 @@ const ExportAllButton = () => {
 
       // Save the PDF after all scenes are added
       setPdfLoading(false);
-      pdf.save(sceneTitle);
+      pdf.save(title);
       handleClose();
     } catch (error) {
       setPdfLoading(false);
       console.log(error, "error generating pdf");
     }
   };
+
   return (
     <>
       <Button
@@ -245,4 +259,4 @@ const ExportAllButton = () => {
   );
 };
 
-export default ExportAllButton;
+export default ExportAllSceneButton;

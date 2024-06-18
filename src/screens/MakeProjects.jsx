@@ -4,6 +4,7 @@ import HeaderProject from "../components/HeaderProject.jsx";
 import { useState } from "react";
 import DeletePopup from "../components/DeletePopup.jsx";
 import { useAppSelector } from "../store/index.js";
+import EditTitlePopup from "../components/EditTitlePopup.jsx";
 const MakeProjects = () => {
   const [asset, setAsset] = useState("scenes");
   const popupState = useAppSelector((state) => state.popup);
@@ -14,6 +15,12 @@ const MakeProjects = () => {
         open={popupState.deletePopup}
         type={popupState.deleteType}
         id={popupState.deleteId}
+      />
+      <EditTitlePopup
+        open={popupState.editTitlePopup}
+        type={popupState.editTitleType}
+        id={popupState.editTitleId}
+        title={popupState.editTitleValue}
       />
       <Box height={"100vh"} bgcolor={"text.light"}>
         <HeaderProject asset={asset} />

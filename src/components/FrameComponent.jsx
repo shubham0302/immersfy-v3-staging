@@ -65,7 +65,7 @@ const FrameComponent = ({ asset, setAsset }) => {
         {sceneDetails?.title}
       </Typography>
 
-      <FramesGrid sceneData={sceneDetails} />
+      <FramesGrid title={sceneDetails?.title} sceneData={sceneDetails} />
     </Box>
   );
 };

@@ -31,6 +31,13 @@ const App = () => {
   const { isLoading, user } = useAuth(true);
   const { _id: userId } = user || {};
 
+  useEffect(() => {
+    window.plugSDK.init({
+      app_id: "don:core:dvrv-us-1:devo/114w2OfdwY:plug_setting/1",
+      widget_alignment: "left",
+    });
+  }, []);
+
   useSocket(setSocketCallData, userId, true, setGenerationCompleted);
 
   if (isLoading) {

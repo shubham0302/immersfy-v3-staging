@@ -89,6 +89,30 @@ const AccountButton = () => {
               }}
               variant="subtitle1"
             >
+              Name
+            </Typography>
+            <TextField
+              fullWidth
+              variant="outlined"
+              value={user.name} // Set the static text as the value
+              InputProps={{
+                sx: {
+                  height: "42px",
+                  borderRadius: "12px",
+                },
+                readOnly: true, // Make the TextField read-only
+              }}
+            />
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography
+              sx={{
+                fontSize: "14px",
+                fontWeight: "500",
+                color: "secondary.dark",
+              }}
+              variant="subtitle1"
+            >
               Email Address
             </Typography>
             <TextField
@@ -99,7 +123,6 @@ const AccountButton = () => {
                 sx: {
                   height: "42px",
                   borderRadius: "12px",
-                  marginTop: 2,
                 },
                 readOnly: true, // Make the TextField read-only
               }}

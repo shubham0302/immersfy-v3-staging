@@ -92,8 +92,20 @@ const ProjectTable = ({ projectData }) => {
           {projectData?.map((project, index) => (
             <TableRow key={index}>
               <TableCell sx={{ fontSize: "14px", color: "greys.darkest" }}>
-                <Box display={"flex"} gap={1} alignItems={"center"}>
-                  <Box
+                <Box
+                  display={"flex"}
+                  gap={1}
+                  alignItems={"center"}
+                  onClick={() =>
+                    navigate(
+                      `/project/${project._id}?title=${createUrlQuery(
+                        project?.name
+                      )}`
+                    )
+                  }
+                  sx={{ cursor: "pointer", width: "fit-content" }}
+                >
+                  {/* <Box
                     component={"span"}
                     bgcolor={"primary.lightest"}
                     py={1}
@@ -103,19 +115,21 @@ const ProjectTable = ({ projectData }) => {
                     px={2}
                   >
                     {createProjectTitle(project?.name)}
-                  </Box>
-                  <Typography
-                    onClick={() =>
-                      navigate(
-                        `/project/${project._id}?title=${createUrlQuery(
-                          project?.name
-                        )}`
-                      )
-                    }
-                    sx={{ cursor: "pointer" }}
-                  >
-                    {project?.name}
-                  </Typography>
+                  </Box> */}
+
+                  <img
+                    src={project.thumbnail}
+                    alt={project.name}
+                    style={{
+                      height: "48px",
+                      objectFit: "cover",
+                      borderRadius: "4px",
+                      filter: `grayscale(${
+                        project.colorType === "black&White" ? "1" : "0"
+                      })`,
+                    }}
+                  />
+                  <Typography>{project?.name}</Typography>
                 </Box>
               </TableCell>
               <TableCell sx={{ fontSize: "14px", color: "greys.darkest" }}>
@@ -135,7 +149,11 @@ const ProjectTable = ({ projectData }) => {
                 {timeHandler(project?.createdDate)}
               </TableCell>
               <TableCell align="right">
-                <ActionsIcon />
+                <ActionsIcon
+                  ID={{ projectId: project._id }}
+                  title={project.name}
+                  type="project"
+                />
               </TableCell>
             </TableRow>
           ))}
