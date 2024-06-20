@@ -102,7 +102,8 @@ const ProfileButton = () => {
 
         <div style={{ margin: "12px" }}>
           <a
-            href="#"
+            href="https://immersfy.notion.site/Privacy-policy-b746819d66d644488e65fc7b15a4559d?pvs=4"
+            target="_blank"
             style={{
               textDecoration: "underline",
               textDecorationColor: "greys.main",
@@ -123,7 +124,8 @@ const ProfileButton = () => {
             </Typography>
           </a>
           <a
-            href="#"
+            href="https://immersfy.notion.site/Privacy-policy-b746819d66d644488e65fc7b15a4559d?pvs=4"
+            target="_blank"
             style={{
               textDecoration: "underline",
               textDecorationColor: "greys.main",
