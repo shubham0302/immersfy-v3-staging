@@ -25,7 +25,7 @@ const ProductHunt = () => {
       >
         <Typography fontWeight={600}>Immersfy</Typography>
         <Box component={"span"}>&#x2022;</Box>
-        <Typography>Is live on product</Typography>
+        <Typography>Is live on ProductHunt</Typography>
         <Box component={"span"}>&#x2022;</Box>
         <Typography>Join the discussion</Typography>
       </AppBar>
