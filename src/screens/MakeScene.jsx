@@ -6,19 +6,24 @@ import HeaderScene from "../components/HeaderScene.jsx";
 import FrameComponent from "../components/FrameComponent.jsx";
 import { useAppSelector } from "../store/index.js";
 import DeletePopup from "../components/DeletePopup.jsx";
+import { useSceneDetails } from "../hooks/useScene.jsx";
+import ProductHunt from "../components/ProductHunt.jsx";
 const MakeScene = () => {
   const popupState = useAppSelector((state) => state.popup);
 
+  const { sceneDetails } = useSceneDetails();
+
   return (
     <Box>
+      <ProductHunt />
       <DeletePopup
         open={popupState.deletePopup}
         type={popupState.deleteType}
         id={popupState.deleteId}
       />
-      <Box height={"100vh"} bgcolor={"text.light"}>
-        <HeaderScene />
-        <FrameComponent />
+      <Box height={"96vh"} bgcolor={"text.light"}>
+        <HeaderScene title={sceneDetails?.title} />
+        <FrameComponent sceneDetails={sceneDetails} />
       </Box>
     </Box>
   );

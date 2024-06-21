@@ -5,6 +5,7 @@ import { useState } from "react";
 import DeletePopup from "../components/DeletePopup.jsx";
 import { useAppSelector } from "../store/index.js";
 import EditTitlePopup from "../components/EditTitlePopup.jsx";
+import ProductHunt from "../components/ProductHunt.jsx";
 
 const Home = () => {
   const [loading, setLoading] = useState(false);
@@ -13,6 +14,7 @@ const Home = () => {
   const popupState = useAppSelector((state) => state.popup);
   return (
     <Box>
+      <ProductHunt />
       <DeletePopup
         open={popupState.deletePopup}
         type={popupState.deleteType}
@@ -24,7 +26,7 @@ const Home = () => {
         id={popupState.editTitleId}
         title={popupState.editTitleValue}
       />
-      <Box height={"100vh"} bgcolor={"text.light"}>
+      <Box height={"96vh"} bgcolor={"text.light"}>
         <Header
           navData={navData}
           setNavData={setNavData}
