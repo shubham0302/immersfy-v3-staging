@@ -12,7 +12,7 @@ const MakeProjects = () => {
 
   return (
     <Box>
-      <ProductHunt />
+      {/* <ProductHunt /> */}
       <DeletePopup
         open={popupState.deletePopup}
         type={popupState.deleteType}
@@ -24,7 +24,7 @@ const MakeProjects = () => {
         id={popupState.editTitleId}
         title={popupState.editTitleValue}
       />
-      <Box height={"96vh"} bgcolor={"text.light"}>
+      <Box height={"100vh"} bgcolor={"text.light"}>
         <HeaderProject asset={asset} />
         <ProjectComponent asset={asset} setAsset={setAsset} />
       </Box>

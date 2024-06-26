@@ -14,7 +14,7 @@ const Home = () => {
   const popupState = useAppSelector((state) => state.popup);
   return (
     <Box>
-      <ProductHunt />
+      {/* <ProductHunt /> */}
       <DeletePopup
         open={popupState.deletePopup}
         type={popupState.deleteType}
@@ -26,7 +26,7 @@ const Home = () => {
         id={popupState.editTitleId}
         title={popupState.editTitleValue}
       />
-      <Box height={"96vh"} bgcolor={"text.light"}>
+      <Box height={"100vh"} bgcolor={"text.light"}>
         <Header
           navData={navData}
           setNavData={setNavData}

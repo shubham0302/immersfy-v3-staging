@@ -15,13 +15,13 @@ const MakeScene = () => {
 
   return (
     <Box>
-      <ProductHunt />
+      {/* <ProductHunt /> */}
       <DeletePopup
         open={popupState.deletePopup}
         type={popupState.deleteType}
         id={popupState.deleteId}
       />
-      <Box height={"96vh"} bgcolor={"text.light"}>
+      <Box height={"100vh"} bgcolor={"text.light"}>
         <HeaderScene title={sceneDetails?.title} />
         <FrameComponent sceneDetails={sceneDetails} />
       </Box>
